@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+service DirectoryService {
+    rpc GetAll (Empty) returns (DirectoryList) {}
+    rpc Get (DirectoryRequestId) returns (Directory) {}
+    rpc Insert (Directory) returns (Directory) {}
+    rpc Update (Directory) returns (Directory) {}
+    rpc Remove (DirectoryRequestId) returns (Empty) {}
+}
+
+
+
+message Empty {}
+
+message Directory {
+    string _id = 1;
+    optional string parent = 2;
+    string owner = 3;
+    string content = 4;
+    string createdAt = 5;
+    optional string updatedAt = 6;
+}
+
+message DirectoryList {
+    repeated Directory directories = 1;
+}
+
+message DirectoryRequestId {
+    string id = 1;
+}
+
+service UserService {
+    rpc Get (UserInfo) returns (UserInfo) {}
+    rpc Insert (UserInfo) returns (UserInfo) {}
+}
+
+message UserInfo {
+    string email = 1;
+    optional string password = 2;
+    optional string id = 3;
+}
