@@ -3,7 +3,7 @@ syntax = "proto3";
 service DirectoryService {
     rpc GetAll (Empty) returns (DirectoryList) {}
     rpc Get (DirectoryRequestId) returns (Directory) {}
-    rpc Insert (Directory) returns (Directory) {}
+    rpc Insert (DirectoryRequestPayload) returns (Directory) {}
     rpc Update (Directory) returns (Directory) {}
     rpc Remove (DirectoryRequestId) returns (Empty) {}
 }
@@ -27,6 +27,13 @@ message DirectoryList {
 
 message DirectoryRequestId {
     string id = 1;
+}
+
+message DirectoryRequestPayload {
+    string type = 1;
+    string owner = 2;
+    string content = 3;
+    string parent = 4;
 }
 
 service UserService {

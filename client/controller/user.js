@@ -2,7 +2,8 @@ const client = require("./../client");
 const ValidateSchema = require("./../schema/validator");
 const InputUserSchema = require("./../schema/user.schema");
 const getAuthToken = require('./../middleware/generatetoken');
-// Create and Save a new Note
+
+// Create and Save a new User
 exports.create = async (req, res) => {
     try {
         await ValidateSchema(req.body, InputUserSchema)
@@ -18,8 +19,7 @@ exports.create = async (req, res) => {
     }
 };
 
-// Find a single note with a noteId
-exports.findOne = (req, res) => {
+exports.login = (req, res) => {
     client.userServiceClient.get(req.body, (err, data) => {
         if (err) res.status(500).json(err);
         if (!err) {
