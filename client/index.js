@@ -5,17 +5,17 @@ const fileManagerController = require("./controller/filemanager");
 const verifyToken = require('./middleware/index');
 
 const multer = require('multer');
-const upload = multer();
+const upload = multer({dest:'public/files'});
 
 const app = express();
 require('dotenv').config();
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true}));
 app.post("/signup", userController.create);
 app.post("/login", userController.login);
 
-app.post("/directory", upload.single('file'), verifyToken, fileManagerController.create);
+app.post("/directory", upload.single('content'), verifyToken, fileManagerController.create);
 app.get("/directory/:id", verifyToken, fileManagerController.findOne);
 app.get("/directory", verifyToken, fileManagerController.create);
 app.put("/directory", verifyToken, fileManagerController.findOne);

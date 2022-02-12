@@ -5,6 +5,7 @@ const protoLoader = require("@grpc/proto-loader");
 const userService = require('./service/user');
 const filemanagerService = require('./service/filemanager');
 require('dotenv').config()
+const helper = require('./helper');
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
     keepCase: true,
@@ -40,7 +41,7 @@ server.addService(proto.DirectoryService.service, {
         } catch (error) {
             callback({
                 code: grpc.status.INTERNAL,
-                message: JSON.stringify(error),
+                message: helper.handleError(error),
             })
         }
     },
@@ -52,7 +53,7 @@ server.addService(proto.DirectoryService.service, {
         } catch (error) {
             callback({
                 code: grpc.status.INTERNAL,
-                message: JSON.stringify(error),
+                message: helper.handleError(error),
             })
         }
     },
@@ -64,7 +65,7 @@ server.addService(proto.DirectoryService.service, {
         } catch (error) {
             callback({
                 code: grpc.status.INTERNAL,
-                message: JSON.stringify(error),
+                message: helper.handleError(error),
             })
         }
     },

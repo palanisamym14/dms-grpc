@@ -34,6 +34,7 @@ message DirectoryRequestPayload {
     string owner = 2;
     string content = 3;
     string parent = 4;
+    string originalname = 5;
 }
 
 service UserService {

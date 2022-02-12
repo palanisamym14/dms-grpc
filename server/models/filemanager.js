@@ -11,7 +11,8 @@ const DirectorySchema = new mongoose.Schema(
     { timestamps: true }
 )
 
-// DirectorySchema.index({ slug: 1, userid: 1 }, { unique: true })
+DirectorySchema.index({ owner: 1, parent: 1, content: 1 }, { unique: true });
+DirectorySchema.index({ owner: 1, parent: 1, type: 1}, { unique: true });
 
-const model = mongoose.model('Directory', DirectorySchema)
+const model = mongoose.model('directory', DirectorySchema)
 module.exports = model;

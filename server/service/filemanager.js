@@ -1,10 +1,20 @@
 const FilemanagerModel = require('../models/filemanager');
-
+const fileProcessor = require('./managefile');
 
 // Create and Save a new directory Model
-exports.create = (body) => {
+exports.create = async (body) => {
     try {
-        console.log(body);
+        if (body.type == 'FILE') {
+            if (body.parent) {
+                const dir = await FilemanagerModel.findOne({ _id: body.parent, type: 'DIR' });
+                if (!dir) {
+                    throw "parent id not an directory"
+                }
+            }
+            await fileProcessor.writeFile(body);
+            body.content = body.originalname;
+        }
+
         const user = new FilemanagerModel(body);
         return user.save();
     } catch (error) {
