@@ -23,7 +23,7 @@ message Directory {
     string createdAt = 5;
     optional string updatedAt = 6;
     optional string type = 7;
-    repeated DirectoryPath path = 8;
+    repeated DirectoryPath paths = 8;
 }
 message DirectoryPath {
     string _id = 1;

@@ -86,20 +86,21 @@ exports.renameDirFile = async (body) => {
     let session;
     try {
         const data = await this.findOne(body);
+
         if (data.type === "DIR") {
-            return FilemanagerModel.updateOne({ _id: body.id, owner: body.owner }, { path: body.newName }).exec();
+            await FilemanagerModel.updateOne({ _id: body.id, owner: body.owner }, { path: body.newName }).exec();
+        } else {
+            const oldPath = helper.constructExistingPath(data, data.path);
+            const newPath = helper.constructExistingPath(data, body.newName);
+
+            session = await FilemanagerModel.startSession();
+            await session.withTransaction(async () => {
+                const updated = await FilemanagerModel.updateOne({ _id: body.id, owner: body.owner }, { path: body.newName }).exec();
+                await fileProcessor.renameDirFile(body, oldPath, newPath);
+                return updated;
+            });
+            session.endSession();
         }
-
-        const oldPath = helper.constructExistingPath(data, data.path);
-        const newPath = helper.constructExistingPath(data, body.newName);
-
-        session = await FilemanagerModel.startSession();
-        await session.withTransaction(async () => {
-            const updated = await FilemanagerModel.updateOne({ _id: body.id, owner: body.owner }, { path: body.newName }).exec();
-            await fileProcessor.renameDirFile(body, oldPath, newPath);
-            return updated;
-        });
-        session.endSession();
         return this.findOne(body);
     } catch (error) {
         throw error;

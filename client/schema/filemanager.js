@@ -9,7 +9,7 @@ exports.FindFileDirSchema = Joi.object({
     parent: Joi.string(),
 });
 
-exports.FileUploadSchema = FindFileDirSchema.keys({
+exports.FileUploadSchema = this.FindFileDirSchema.keys({
     type: Joi.string().valid('FILE').default('FILE'),
 });
 
