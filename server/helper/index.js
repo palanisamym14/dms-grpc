@@ -21,5 +21,4 @@ constructExistingPath = (data, fileName) => {
     return path
 }
 
-
 module.exports = { isValidId, handleError, constructExistingPath}

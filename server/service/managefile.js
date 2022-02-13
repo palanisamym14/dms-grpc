@@ -14,9 +14,11 @@ const mkdir = (dirPath) => {
 
 }
 
+exports.rootPath = (body) => path.join(appRootDir + '/filemanager', body.owner);
+
 exports.writeFile = async (body) => {
     try {
-        let _path = path.join(appRootDir + '/filemanager', body.owner);
+        let _path = this.rootPath(body);
         if (body.parent) {
             _path = `${_path}/${body.parent}`;
         }
@@ -33,7 +35,7 @@ exports.writeFile = async (body) => {
 
 exports.renameDirFile = (body, oldPath, newPath) => {
     try {
-        let _path = path.join(appRootDir + '/filemanager', body.owner);
+        let _path = this.rootPath(body);;
         const _oldpath = `${_path}/${oldPath}`;
         const _newPath = `${_path}/${newPath}`;
 

@@ -6,6 +6,7 @@ const userService = require('./service/user');
 const filemanagerService = require('./service/filemanager');
 require('dotenv').config()
 const helper = require('./helper');
+const fs = require('fs');
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
     keepCase: true,
@@ -54,7 +55,7 @@ server.addService(proto.DirectoryService.service, {
             })
         }
     },
-    uploadFile:async (call, callback) => {
+    uploadFile: async (call, callback) => {
         try {
             const res = await filemanagerService.uploadFile(call.request)
             callback(null, { ...res });
@@ -75,6 +76,27 @@ server.addService(proto.DirectoryService.service, {
                 code: grpc.status.INTERNAL,
                 message: helper.handleError(error),
             })
+        }
+    },
+    downloadFile: async (call, callback) => {
+        try {
+            const res = await filemanagerService.downloadFile(call.request);
+
+            call.write({ fileName: res.filename, contentType: res.mimetype });
+            const readStream = fs.createReadStream(res.file);
+            readStream.on('data', (chunk) => {
+                call.write({
+                    message: chunk
+                });
+            })
+            readStream.on('end', () => {
+                call.end();
+            });
+        } catch (error) {
+            call.write({
+                error: { code: grpc.status.UNKNOWN, message: error }
+            });
+            call.destroy();
         }
     },
 

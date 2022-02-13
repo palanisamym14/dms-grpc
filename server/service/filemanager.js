@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 const fileProcessor = require('./managefile');
 const FilemanagerModel = require('../models/filemanager');
 const helper = require('./../helper')
+const path = require('path');
+const mime = require('mime');
+const fs = require('fs');
 
 exports.create = async (body) => {
     try {
@@ -102,6 +105,27 @@ exports.renameDirFile = async (body) => {
             session.endSession();
         }
         return this.findOne(body);
+    } catch (error) {
+        throw error;
+    }
+};
+
+exports.downloadFile = async (body) => {
+    try {
+        const data = await this.findOne(body);
+        if (data.type != "FILE") {
+            throw "DIR cannot be download";
+        }
+        if (data.path) {
+            var file = `${fileProcessor.rootPath(body)}/${helper.constructExistingPath(data, data.path)}`;
+            if (!fs.existsSync(file)) {
+                throw "invalid file path";
+            }
+            var filename = path.basename(file);
+            var mimetype = mime.lookup(file);
+            return { filename, mimetype, file }
+        }
+        throw "invalid file path";
     } catch (error) {
         throw error;
     }

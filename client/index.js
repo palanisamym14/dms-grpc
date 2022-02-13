@@ -22,7 +22,7 @@ app.get("/directory", verifyToken, fileManagerController.findAll);
 app.put("/directory", verifyToken, fileManagerController.findOne);
 app.delete("/directory", verifyToken, fileManagerController.findOne);
 app.post("/file/upload", upload.single('file'), verifyToken, fileManagerController.uploadFile);
-app.post("/file/download/:id", verifyToken, fileManagerController.uploadFile);
+app.get("/file/download/:id", verifyToken, fileManagerController.downloadFile);
 
 
 const PORT = process.env.PORT || 3000;

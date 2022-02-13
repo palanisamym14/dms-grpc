@@ -3,7 +3,7 @@ const ValidateSchema = require("./../schema/validator");
 const fileManagerSchema = require("./../schema/filemanager");
 const fs = require('fs')
 const util = require('./../util');
-
+const { Readable } = require('stream'); 
 
 exports.create = async (req, res) => {
     try {
@@ -51,13 +51,34 @@ exports.uploadFile = async (req, res) => {
 
 exports.downloadFile = async (req, res) => {
     try {
-       
-        client.directoryServiceClient.insert({ ...input }, (err, data) => {
-            console.log(err)
-            if (err) util.handlerError(res, (err));
-            if (!err) {
-                res.json(data);
+        const input = {
+            owner: req.user.id,
+            id: req.params.id
+        }
+        let call = client.directoryServiceClient.downloadFile({ ...input });
+        const inStream = new Readable({
+            read() { }
+        });
+
+        call.on('data', function (response) {
+            if (response.fileName) {
+                res.setHeader('Content-disposition', 'attachment; filename=' + response.fileName);
             }
+            if (response.contentType) {
+                res.setHeader('Content-type', response.contentType);
+            }
+            if (response.message) {
+                inStream.push(response.message);
+            }
+            if (response.error) {
+                util.handlerError(res, response.error);
+            }
+        });
+
+        call.on('end', function (message) {
+            console.log(message);
+            inStream.push(null)
+            inStream.pipe(res);
         });
 
     } catch (error) {
@@ -80,7 +101,6 @@ exports.findAll = async (req, res) => {
     try {
         const input = await ValidateSchema(req.query, fileManagerSchema.FindFileDirSchema);
         input.owner = req.user.id;
-        console.log(input);
         client.directoryServiceClient.getAll({ ...input }, (err, data) => {
             console.log(err)
             if (err) util.handlerError(res, (err));
@@ -97,7 +117,6 @@ exports.rename = async (req, res) => {
     try {
         const input = await ValidateSchema(req.body, fileManagerSchema.RenameFileDirSchema);
         input.owner = req.user.id;
-        console.log(input);
         client.directoryServiceClient.renameDirFile({ ...input }, (err, data) => {
             console.log(err)
             if (err) util.handlerError(res, (err));

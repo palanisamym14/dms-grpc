@@ -8,6 +8,7 @@ service DirectoryService {
     rpc Update (Directory) returns (Directory) {}
     rpc Remove (DirectoryRequestId) returns (Empty) {}
     rpc RenameDirFile (DirectoryRenameRequest) returns (Directory) {}
+    rpc DownloadFile (DirectoryRenameRequest) returns (stream DownloadFileResponse) {}
     
 }
 
@@ -65,6 +66,12 @@ message DirectoryRenameRequest {
      string id = 1;
      string owner = 2;
      string newName = 3;
+}
+
+message DownloadFileResponse {
+     bytes message = 1;
+     string contentType = 2;
+     string fileName = 3;
 }
 
 service UserService {
