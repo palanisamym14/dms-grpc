@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 exports.CreateFileDirSchema = Joi.object({
-    type: Joi.string().valid('DIR').default('FILE'),
+    type: Joi.string().valid('DIR').default('DIR'),
     path: Joi.string().required(),
 });
 

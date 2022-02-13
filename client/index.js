@@ -3,13 +3,20 @@ const bodyParser = require("body-parser");
 const userController = require("./controller/user");
 const fileManagerController = require("./controller/filemanager");
 const verifyToken = require('./middleware/index');
-
+const cors = require('cors')
 const multer = require('multer');
 const upload = multer({dest:'public/files'});
 
 const app = express();
 require('dotenv').config();
+const corsOption = {
+    credentials: true,
+    exposedHeaders: ['x-auth-token'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    origin: true
+};
 
+app.use(cors(corsOption))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
 app.post("/signup", userController.create);

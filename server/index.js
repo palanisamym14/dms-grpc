@@ -94,7 +94,7 @@ server.addService(proto.DirectoryService.service, {
             });
         } catch (error) {
             call.write({
-                error: { code: grpc.status.UNKNOWN, message: error }
+                error: { code: grpc.status.UNKNOWN,  message: helper.handleError(error) }
             });
             call.destroy();
         }
@@ -107,7 +107,7 @@ server.addService(proto.DirectoryService.service, {
         } catch (error) {
             callback({
                 code: grpc.status.INTERNAL,
-                message: JSON.stringify(error),
+                message: helper.handleError(error),
             })
         }
     }
@@ -121,7 +121,7 @@ server.addService(proto.UserService.service, {
         } catch (error) {
             callback({
                 code: grpc.status.INTERNAL,
-                message: JSON.stringify(error),
+                message: helper.handleError(error),
             })
         }
     },
@@ -132,7 +132,7 @@ server.addService(proto.UserService.service, {
         } catch (error) {
             callback({
                 code: grpc.status.INTERNAL,
-                message: JSON.stringify(error),
+                message: helper.handleError(error),
             })
         }
     },

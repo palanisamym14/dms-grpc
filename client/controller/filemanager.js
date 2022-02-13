@@ -36,7 +36,7 @@ exports.uploadFile = async (req, res) => {
         input.mimetype = req.file.mimetype;
         input.owner = req.user.id;
 
-        client.directoryServiceClient.insert({ ...input }, (err, data) => {
+        client.directoryServiceClient.uploadFile({ ...input }, (err, data) => {
             console.log(err)
             if (err) util.handlerError(res, (err));
             if (!err) {
@@ -105,7 +105,7 @@ exports.findAll = async (req, res) => {
             console.log(err)
             if (err) util.handlerError(res, (err));
             if (!err) {
-                res.json(data);
+                res.json(data?.directories|| []);
             }
         });
     } catch (error) {

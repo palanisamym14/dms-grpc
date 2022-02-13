@@ -60,6 +60,7 @@ message DirectoryRequestFileUploadPayload {
     string content = 3;
     string parent = 4;
     string originalname = 5;
+    string mimetype = 6;
 }
 
 message DirectoryRenameRequest {
