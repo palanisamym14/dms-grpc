@@ -15,11 +15,15 @@ app.use(bodyParser.urlencoded({ extended: true}));
 app.post("/signup", userController.create);
 app.post("/login", userController.login);
 
-app.post("/directory", upload.single('content'), verifyToken, fileManagerController.create);
+app.post("/directory", verifyToken, fileManagerController.create);
+app.put("/directory/rename", verifyToken, fileManagerController.rename);
 app.get("/directory/:id", verifyToken, fileManagerController.findOne);
-app.get("/directory", verifyToken, fileManagerController.create);
+app.get("/directory", verifyToken, fileManagerController.findAll);
 app.put("/directory", verifyToken, fileManagerController.findOne);
 app.delete("/directory", verifyToken, fileManagerController.findOne);
+app.post("/file/upload", upload.single('file'), verifyToken, fileManagerController.uploadFile);
+app.post("/file/download/:id", verifyToken, fileManagerController.uploadFile);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

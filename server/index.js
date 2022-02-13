@@ -15,29 +15,14 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 });
 
 const proto = grpc.loadPackageDefinition(packageDefinition);
-
-
 const server = new grpc.Server();
-const customers = [
-    {
-        _id: "a68b823c-7ca6-44bc-b721-fb4d5312cafc",
-        parent: "John Bolton",
-        content: "Address",
-        owner: "Address 1"
-    },
-    {
-        _id: "a68b823c-7ca6-44bc-b721-fb4d5312cafc",
-        parent: "John Bolton",
-        content: "Address",
-        owner: "Address 1"
-    },
-];
+
 
 server.addService(proto.DirectoryService.service, {
-    getAll: async (_, callback) => {
+    getAll: async (call, callback) => {
         try {
-            const res = await userService.signup(call.request)
-            callback(null, { ...res });
+            const res = await filemanagerService.findAll(call.request)
+            callback(null, { directories: res });
         } catch (error) {
             callback({
                 code: grpc.status.INTERNAL,
@@ -48,7 +33,7 @@ server.addService(proto.DirectoryService.service, {
 
     get: async (call, callback) => {
         try {
-            const res = await userService.signup(call.request)
+            const res = await filemanagerService.findOne(call.request)
             callback(null, { ...res });
         } catch (error) {
             callback({
@@ -69,15 +54,26 @@ server.addService(proto.DirectoryService.service, {
             })
         }
     },
-
-    update: async (call, callback) => {
+    uploadFile:async (call, callback) => {
         try {
-            const res = await userService.signup(call.request)
+            const res = await filemanagerService.uploadFile(call.request)
             callback(null, { ...res });
         } catch (error) {
             callback({
                 code: grpc.status.INTERNAL,
-                message: JSON.stringify(error),
+                message: helper.handleError(error),
+            })
+        }
+    },
+
+    renameDirFile: async (call, callback) => {
+        try {
+            const res = await filemanagerService.renameDirFile(call.request)
+            callback(null, { ...res });
+        } catch (error) {
+            callback({
+                code: grpc.status.INTERNAL,
+                message: helper.handleError(error),
             })
         }
     },

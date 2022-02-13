@@ -2,6 +2,7 @@ const client = require("./../client");
 const ValidateSchema = require("./../schema/validator");
 const InputUserSchema = require("./../schema/user.schema");
 const getAuthToken = require('./../middleware/generatetoken');
+const util = require('./../util');
 
 // Create and Save a new User
 exports.create = async (req, res) => {
@@ -9,13 +10,13 @@ exports.create = async (req, res) => {
         await ValidateSchema(req.body, InputUserSchema)
         client.userServiceClient.insert(req.body, (err, data) => {
             console.log(err)
-            if (err) res.status(500).json(err);
+            if (err) util.handlerError(res, (err));
             if (!err) {
                 res.json(data);
             }
         });
     } catch (error) {
-        res.status(error.code || 500).json({message: error.message || error})
+        res.status(error.code || 500).json({ message: error.message || error })
     }
 };
 

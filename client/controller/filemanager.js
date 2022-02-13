@@ -1,34 +1,17 @@
 const client = require("./../client");
 const ValidateSchema = require("./../schema/validator");
-const InputFileManager = require("./../schema/filemanager");
+const fileManagerSchema = require("./../schema/filemanager");
 const fs = require('fs')
-// Create file /dir
+const util = require('./../util');
 
-function bufferToBase64DataContent(contentType, body) {
-    if (body) {
-        return 'data:' + contentType + ';base64,' + body?.toString('base64');
-    }
-    return null;
-}
+
 exports.create = async (req, res) => {
     try {
-        const input = await ValidateSchema(req.body, InputFileManager);
-        input.owner = req['user']["id"];
-
-        if (input.type === "FILE") {
-            if (req["file"] == null) {
-                throw { code: 403, message: 'content is required' }
-            }
-            input.content = fs.readFileSync(req.file.path).toString('base64');
-            fs.unlinkSync(req.file.path);
-            input.originalname = req.file.originalname
-            input.mimetype = req.file.mimetype
-        }
-
-
+        const input = await ValidateSchema(req.body, fileManagerSchema.CreateFileDirSchema);
+        input.owner = req.user.id;
         client.directoryServiceClient.insert({ ...input }, (err, data) => {
             console.log(err)
-            if (err) res.status(500).json(err);
+            if (err) util.handlerError(res, (err));
             if (!err) {
                 res.json(data);
             }
@@ -39,12 +22,91 @@ exports.create = async (req, res) => {
     }
 };
 
-// Find a single note with a noteId
+
+exports.uploadFile = async (req, res) => {
+    try {
+        const input = await ValidateSchema(req.body, fileManagerSchema.FileUploadSchema);
+        if (req["file"] == null) {
+            throw { code: 403, message: 'file is required' }
+        }
+
+        input.content = fs.readFileSync(req.file.path).toString('base64');
+        fs.unlinkSync(req.file.path);
+        input.originalname = req.file.originalname;
+        input.mimetype = req.file.mimetype;
+        input.owner = req.user.id;
+
+        client.directoryServiceClient.insert({ ...input }, (err, data) => {
+            console.log(err)
+            if (err) util.handlerError(res, (err));
+            if (!err) {
+                res.json(data);
+            }
+        });
+
+    } catch (error) {
+        res.status(error.code || 500).json({ message: error.message || error })
+    }
+};
+
+exports.downloadFile = async (req, res) => {
+    try {
+       
+        client.directoryServiceClient.insert({ ...input }, (err, data) => {
+            console.log(err)
+            if (err) util.handlerError(res, (err));
+            if (!err) {
+                res.json(data);
+            }
+        });
+
+    } catch (error) {
+        res.status(error.code || 500).json({ message: error.message || error })
+    }
+};
+
 exports.findOne = (req, res) => {
-    client.userServiceClient.get(req.body, (err, data) => {
-        if (err) res.status(500).json(err);
+    const input = req.params;
+    input.owner = req.user.id;
+    client.directoryServiceClient.get(input, (err, data) => {
+        if (err) util.handlerError(res, (err));
         if (!err) {
             res.json(data);
         }
     });
 };
+
+exports.findAll = async (req, res) => {
+    try {
+        const input = await ValidateSchema(req.query, fileManagerSchema.FindFileDirSchema);
+        input.owner = req.user.id;
+        console.log(input);
+        client.directoryServiceClient.getAll({ ...input }, (err, data) => {
+            console.log(err)
+            if (err) util.handlerError(res, (err));
+            if (!err) {
+                res.json(data);
+            }
+        });
+    } catch (error) {
+        res.status(error.code || 500).json({ message: error.message || error })
+    }
+};
+
+exports.rename = async (req, res) => {
+    try {
+        const input = await ValidateSchema(req.body, fileManagerSchema.RenameFileDirSchema);
+        input.owner = req.user.id;
+        console.log(input);
+        client.directoryServiceClient.renameDirFile({ ...input }, (err, data) => {
+            console.log(err)
+            if (err) util.handlerError(res, (err));
+            if (!err) {
+                res.json(data);
+            }
+        });
+    } catch (error) {
+        res.status(error.code || 500).json({ message: error.message || error })
+    }
+};
+

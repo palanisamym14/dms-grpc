@@ -1,11 +1,14 @@
 syntax = "proto3";
 
 service DirectoryService {
-    rpc GetAll (Empty) returns (DirectoryList) {}
+    rpc GetAll (DirectoryAllReq) returns (DirectoryList) {}
     rpc Get (DirectoryRequestId) returns (Directory) {}
     rpc Insert (DirectoryRequestPayload) returns (Directory) {}
+    rpc UploadFile (DirectoryRequestFileUploadPayload) returns (Directory) {}
     rpc Update (Directory) returns (Directory) {}
     rpc Remove (DirectoryRequestId) returns (Empty) {}
+    rpc RenameDirFile (DirectoryRenameRequest) returns (Directory) {}
+    
 }
 
 
@@ -16,9 +19,23 @@ message Directory {
     string _id = 1;
     optional string parent = 2;
     string owner = 3;
-    string content = 4;
+    string path = 4;
     string createdAt = 5;
     optional string updatedAt = 6;
+    optional string type = 7;
+    repeated DirectoryPath path = 8;
+}
+message DirectoryPath {
+    string _id = 1;
+    optional string parent = 2;
+    string path = 3;
+    string type = 4;
+    string level = 5;
+}
+
+message DirectoryAllReq {
+    optional string parent = 1;
+    string owner = 2;
 }
 
 message DirectoryList {
@@ -27,14 +44,27 @@ message DirectoryList {
 
 message DirectoryRequestId {
     string id = 1;
+    string owner = 2;
 }
 
 message DirectoryRequestPayload {
     string type = 1;
     string owner = 2;
+    string path = 3;
+}
+
+message DirectoryRequestFileUploadPayload {
+    string type = 1;
+    string owner = 2;
     string content = 3;
     string parent = 4;
     string originalname = 5;
+}
+
+message DirectoryRenameRequest {
+     string id = 1;
+     string owner = 2;
+     string newName = 3;
 }
 
 service UserService {

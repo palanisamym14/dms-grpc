@@ -1,20 +1,10 @@
-const FilemanagerModel = require('../models/filemanager');
+const mongoose = require('mongoose');
 const fileProcessor = require('./managefile');
+const FilemanagerModel = require('../models/filemanager');
+const helper = require('./../helper')
 
-// Create and Save a new directory Model
 exports.create = async (body) => {
     try {
-        if (body.type == 'FILE') {
-            if (body.parent) {
-                const dir = await FilemanagerModel.findOne({ _id: body.parent, type: 'DIR' });
-                if (!dir) {
-                    throw "parent id not an directory"
-                }
-            }
-            await fileProcessor.writeFile(body);
-            body.content = body.originalname;
-        }
-
         const user = new FilemanagerModel(body);
         return user.save();
     } catch (error) {
@@ -22,91 +12,97 @@ exports.create = async (body) => {
     }
 };
 
-// Retrieve and return all directories from the database.
-exports.findAll = (req, res) => {
-    FilemanagerModel.find()
-        .then(notes => {
-            res.send(notes);
-        }).catch(err => {
-            res.status(500).send({
-                message: err.message || "Some error occurred while retrieving notes."
-            });
-        });
-};
+exports.uploadFile = async (body) => {
+    try {
 
-// Find a single note with a noteId
-exports.findOne = (req, res) => {
-    FilemanagerModel.findById(req.params.noteId)
-        .then(note => {
-            if (!note) {
-                return res.status(404).send({
-                    message: "FilemanagerModel not found with id " + req.params.noteId
-                });
+        if (body.parent) {
+            const dir = await FilemanagerModel.findOne({ _id: body.parent, type: 'DIR' });
+            if (!dir) {
+                throw "parent id not an directory"
             }
-            res.send(note);
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "FilemanagerModel not found with id " + req.params.noteId
-                });
-            }
-            return res.status(500).send({
-                message: "Error retrieving note with id " + req.params.noteId
-            });
-        });
-};
-
-// Update a note identified by the noteId in the request
-exports.update = (req, res) => {
-    // Validate Request
-    if (!req.body.content) {
-        return res.status(400).send({
-            message: "directory content can not be empty"
-        });
+        }
+        await fileProcessor.writeFile(body);
+        body.path = body.originalname;
+        const user = new FilemanagerModel(body);
+        return user.save();
+    } catch (error) {
+        throw error;
     }
-
-    // Find note and update it with the request body
-    FilemanagerModel.findByIdAndUpdate(req.params.noteId, {
-        title: req.body.title || "Untitled FilemanagerModel",
-        content: req.body.content
-    }, { new: true })
-        .then(note => {
-            if (!note) {
-                return res.status(404).send({
-                    message: "FilemanagerModel not found with id " + req.params.noteId
-                });
-            }
-            res.send(note);
-        }).catch(err => {
-            if (err.kind === 'ObjectId') {
-                return res.status(404).send({
-                    message: "FilemanagerModel not found with id " + req.params.noteId
-                });
-            }
-            return res.status(500).send({
-                message: "Error updating note with id " + req.params.noteId
-            });
-        });
 };
 
-// Delete a note with the specified noteId in the request
-exports.delete = (req, res) => {
-    FilemanagerModel.findByIdAndRemove(req.params.noteId)
-        .then(note => {
-            if (!note) {
-                return res.status(404).send({
-                    message: "DIR/File not found with id " + req.params.noteId
-                });
-            }
-            res.send({ message: "DIR/File deleted successfully!" });
-        }).catch(err => {
-            if (err.kind === 'ObjectId' || err.name === 'NotFound') {
-                return res.status(404).send({
-                    message: "DIR/File not found with id " + req.params.noteId
-                });
-            }
-            return res.status(500).send({
-                message: "Could not delete note with id " + req.params.noteId
-            });
-        });
+const aggregation = (body) => {
+    const aggregate = FilemanagerModel.aggregate();
+    aggregate.match({ ...body });
+    aggregate.graphLookup({
+        from: 'directory',
+        startWith: "$parent",
+        connectFromField: 'parent',
+        connectToField: '_id',
+        as: 'paths',
+        depthField: "level"
+    });
+    return aggregate.exec();
+}
+
+// Retrieve and return all directories from the database.
+exports.findAll = async (body) => {
+    try {
+        if (body.parent && !helper.isValidId(body.parent)) {
+            throw `${body.id} is invalid parent`;
+        }
+        const _body = {
+            parent: null,
+            owner: mongoose.Types.ObjectId(body.owner)
+        }
+        if (body.parent) {
+            _body.parent = mongoose.Types.ObjectId(body.parent);
+        }
+        return await aggregation(_body);
+    } catch (error) {
+        throw error;
+    }
 };
+
+exports.findOne = async (body) => {
+    try {
+        if (!helper.isValidId(body.id)) {
+            throw `${body.id} is invalid`;
+        }
+
+        const _body = {
+            _id: mongoose.Types.ObjectId(body.id),
+            owner: mongoose.Types.ObjectId(body.owner)
+        }
+
+        const [res] = await aggregation(_body);
+        return res?.type ? res : {};
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+exports.renameDirFile = async (body) => {
+    let session;
+    try {
+        const data = await this.findOne(body);
+        if (data.type === "DIR") {
+            return FilemanagerModel.updateOne({ _id: body.id, owner: body.owner }, { path: body.newName }).exec();
+        }
+
+        const oldPath = helper.constructExistingPath(data, data.path);
+        const newPath = helper.constructExistingPath(data, body.newName);
+
+        session = await FilemanagerModel.startSession();
+        await session.withTransaction(async () => {
+            const updated = await FilemanagerModel.updateOne({ _id: body.id, owner: body.owner }, { path: body.newName }).exec();
+            await fileProcessor.renameDirFile(body, oldPath, newPath);
+            return updated;
+        });
+        session.endSession();
+        return this.findOne(body);
+    } catch (error) {
+        throw error;
+    }
+};
+
