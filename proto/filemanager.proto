@@ -35,7 +35,7 @@ message DirectoryPath {
 }
 
 message DirectoryAllReq {
-    optional string parent = 1;
+    optional string id = 1;
     string owner = 2;
 }
 

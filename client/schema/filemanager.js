@@ -6,10 +6,11 @@ exports.CreateFileDirSchema = Joi.object({
 });
 
 exports.FindFileDirSchema = Joi.object({
-    parent: Joi.string(),
+    id: Joi.string(),
 });
 
 exports.FileUploadSchema = this.FindFileDirSchema.keys({
+    parent: Joi.string(),
     type: Joi.string().valid('FILE').default('FILE'),
 });
 

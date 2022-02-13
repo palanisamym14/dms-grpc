@@ -27,13 +27,14 @@ exports.uploadFile = async (body) => {
         await fileProcessor.writeFile(body);
         body.path = body.originalname;
         const user = new FilemanagerModel(body);
-        return user.save();
+         const res = await user.save();
+        return this.findOne({...body, id:res._id});
     } catch (error) {
         throw error;
     }
 };
 
-const aggregation = (body) => {
+const customAggregation = (body) => {
     const aggregate = FilemanagerModel.aggregate();
     aggregate.match({ ...body });
     aggregate.graphLookup({
@@ -46,19 +47,35 @@ const aggregation = (body) => {
     });
     return aggregate.exec();
 }
+const aggregation = async (body) => {
+
+    const res = await customAggregation(body);
+    if (res.length) {
+        return res;
+    }
+    if (body.parent) {
+        const _body = {
+            owner: body.owner,
+            _id: body.parent,
+        }
+        const res = await customAggregation(_body);
+        return [{ paths: res, parent: body.parent }]
+    }
+    return [];
+}
 
 // Retrieve and return all directories from the database.
 exports.findAll = async (body) => {
     try {
-        if (body.parent && !helper.isValidId(body.parent)) {
+        if (body.id && !helper.isValidId(body.id)) {
             throw `${body.id} is invalid parent`;
         }
         const _body = {
             parent: null,
             owner: mongoose.Types.ObjectId(body.owner)
         }
-        if (body.parent) {
-            _body.parent = mongoose.Types.ObjectId(body.parent);
+        if (body.id) {
+            _body.parent = mongoose.Types.ObjectId(body.id);
         }
         return await aggregation(_body);
     } catch (error) {
