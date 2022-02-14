@@ -27,7 +27,7 @@ server.addService(proto.DirectoryService.service, {
     insert: filemanagercontroller.insert,
     uploadFile: filemanagercontroller.uploadFile,
     renameDirFile: filemanagercontroller.renameDirFile,
-    downloadFile: filemanagercontroller.renameDirFile,
+    downloadFile: filemanagercontroller.downloadFile,
     remove: filemanagercontroller.remove,
 });
 
