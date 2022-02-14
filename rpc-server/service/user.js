@@ -18,7 +18,8 @@ exports.signup = async (body) => {
         const salt = await bcrypt.genSalt(10);
         // now we set user password to hashed password
         user.password = await bcrypt.hash(user.password, salt);
-        return user.save();
+        await user.save();
+        return { email: body.email, message: "User created" };
     } catch (error) {
         throw "Email already exist";
     }

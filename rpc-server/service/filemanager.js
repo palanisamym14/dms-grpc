@@ -9,7 +9,8 @@ const fs = require('fs');
 exports.create = async (body) => {
     try {
         const user = new FilemanagerModel(body);
-        return user.save();
+        const res = await user.save()
+        return {...body, _id: res._id};
     } catch (error) {
         throw error;
     }
@@ -19,16 +20,16 @@ exports.uploadFile = async (body) => {
     try {
 
         if (body.parent) {
-            const dir = await FilemanagerModel.findOne({ _id: body.parent, type: 'DIR' });
-            if (!dir) {
-                throw "parent id not an directory"
+            const dir = await FilemanagerModel.findOne({ _id: body.parent, type: 'FILE' });
+            if (dir) {
+                throw "only one file allowed in subfolders";
             }
         }
         await fileProcessor.writeFile(body);
         body.path = body.originalname;
         const user = new FilemanagerModel(body);
-         const res = await user.save();
-        return this.findOne({...body, id:res._id});
+        const res = await user.save();
+        return this.findOne({ ...body, id: res._id });
     } catch (error) {
         throw error;
     }
@@ -47,8 +48,8 @@ const customAggregation = (body) => {
     });
     return aggregate.exec();
 }
-const aggregation = async (body) => {
 
+const aggregation = async (body) => {
     const res = await customAggregation(body);
     if (res.length) {
         return res;
@@ -70,6 +71,7 @@ exports.findAll = async (body) => {
         if (body.id && !helper.isValidId(body.id)) {
             throw `${body.id} is invalid parent`;
         }
+        //parent is null retrive root level file/folder
         const _body = {
             parent: null,
             owner: mongoose.Types.ObjectId(body.owner)
@@ -148,3 +150,19 @@ exports.downloadFile = async (body) => {
     }
 };
 
+
+exports.delete = async (body) => {
+    try {
+        const dir = await this.findOne(body);
+        if (dir.type == "DIR") {
+            const child = await FilemanagerModel.findOne({ parent: body.id }).exec();
+            if (child) {
+                throw "Cannot delete directory not empty";
+            }
+        }
+        await FilemanagerModel.findOneAndDelete({ ...body }).exec()
+        return { message: "File/Folder deleted" };
+    } catch (error) {
+        throw error;
+    }
+};

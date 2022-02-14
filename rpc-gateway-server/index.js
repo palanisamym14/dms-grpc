@@ -1,18 +1,18 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const userController = require("./controller/user");
-const fileManagerController = require("./controller/filemanager");
-const verifyToken = require('./middleware/index');
 const cors = require('cors')
 const multer = require('multer');
+const userController = require("./controller/user");
+const fileManagerController = require("./controller/filemanager");
+const verifyToken = require('./middleware/validatetoken');
 const upload = multer({dest:'public/files'});
 
 const app = express();
 require('dotenv').config();
+
 const corsOption = {
     credentials: true,
-    exposedHeaders: ['x-auth-token'],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: 'GET,HEAD,PUT,POST,DELETE',
     origin: true
 };
 
@@ -26,8 +26,8 @@ app.post("/directory", verifyToken, fileManagerController.create);
 app.put("/directory/rename", verifyToken, fileManagerController.rename);
 app.get("/directory/:id", verifyToken, fileManagerController.findOne);
 app.get("/directory", verifyToken, fileManagerController.findAll);
-app.put("/directory", verifyToken, fileManagerController.findOne);
-app.delete("/directory", verifyToken, fileManagerController.findOne);
+app.delete("/directory/:id", verifyToken, fileManagerController.delete);
+
 app.post("/file/upload", upload.single('file'), verifyToken, fileManagerController.uploadFile);
 app.get("/file/download/:id", verifyToken, fileManagerController.downloadFile);
 

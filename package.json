@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "node server/index.js",
-    "client": "node client/index.js"
+    "server": "node rpc-server/index.js",
+    "client": "node rpc-gateway-server/index.js"
   },
   "author": "",
   "license": "ISC",

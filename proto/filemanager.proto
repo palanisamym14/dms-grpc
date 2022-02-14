@@ -6,7 +6,7 @@ service DirectoryService {
     rpc Insert (DirectoryRequestPayload) returns (Directory) {}
     rpc UploadFile (DirectoryRequestFileUploadPayload) returns (Directory) {}
     rpc Update (Directory) returns (Directory) {}
-    rpc Remove (DirectoryRequestId) returns (Empty) {}
+    rpc Remove (DirectoryRequestId) returns (DeleteFileResponse) {}
     rpc RenameDirFile (DirectoryRenameRequest) returns (Directory) {}
     rpc DownloadFile (DirectoryRenameRequest) returns (stream DownloadFileResponse) {}
     
@@ -73,6 +73,10 @@ message DownloadFileResponse {
      bytes message = 1;
      string contentType = 2;
      string fileName = 3;
+     string error = 4;
+}
+message DeleteFileResponse {
+     string message = 1;
 }
 
 service UserService {
@@ -84,4 +88,5 @@ message UserInfo {
     string email = 1;
     optional string password = 2;
     optional string id = 3;
+    optional string message = 4;
 }

@@ -9,5 +9,5 @@ exports.handlerError = (res, payload) => {
         }
         return;
     }
-    res.status(500).json(payload.details);
+    res.status(500).json(payload?.details || payload);
 }

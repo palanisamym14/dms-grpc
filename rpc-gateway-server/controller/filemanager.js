@@ -1,9 +1,9 @@
-const client = require("./../client");
+const client = require("./../rpc-client");
 const ValidateSchema = require("./../schema/validator");
 const fileManagerSchema = require("./../schema/filemanager");
 const fs = require('fs')
-const util = require('./../util');
-const { Readable } = require('stream'); 
+const util = require('./../helper/util');
+const { Readable } = require('stream');
 
 exports.create = async (req, res) => {
     try {
@@ -55,8 +55,9 @@ exports.downloadFile = async (req, res) => {
             owner: req.user.id,
             id: req.params.id
         }
+        console.log(input);
         let call = client.directoryServiceClient.downloadFile({ ...input });
-        const inStream = new Readable({
+        let inStream = new Readable({
             read() { }
         });
 
@@ -71,14 +72,18 @@ exports.downloadFile = async (req, res) => {
                 inStream.push(response.message);
             }
             if (response.error) {
-                util.handlerError(res, response.error);
+                console.log(response.error);
+                inStream = null;
+                util.handlerError(res,{ details:response.error});
             }
         });
 
         call.on('end', function (message) {
             console.log(message);
-            inStream.push(null)
-            inStream.pipe(res);
+            if (inStream) {
+                inStream.push(null)
+                inStream.pipe(res);
+            }
         });
 
     } catch (error) {
@@ -86,8 +91,8 @@ exports.downloadFile = async (req, res) => {
     }
 };
 
-exports.findOne = (req, res) => {
-    const input = req.params;
+exports.findOne = async (req, res) => {
+    const input = await ValidateSchema(req.params, fileManagerSchema.FindFileDirSchema);
     input.owner = req.user.id;
     client.directoryServiceClient.get(input, (err, data) => {
         if (err) util.handlerError(res, (err));
@@ -105,7 +110,7 @@ exports.findAll = async (req, res) => {
             console.log(err)
             if (err) util.handlerError(res, (err));
             if (!err) {
-                res.json(data?.directories|| []);
+                res.json(data?.directories || []);
             }
         });
     } catch (error) {
@@ -127,5 +132,16 @@ exports.rename = async (req, res) => {
     } catch (error) {
         res.status(error.code || 500).json({ message: error.message || error })
     }
+};
+
+exports.delete = async (req, res) => {
+    const input = await ValidateSchema(req.params, fileManagerSchema.FindFileDirSchema);
+    input.owner = req.user.id;
+    client.directoryServiceClient.remove(input, (err, data) => {
+        if (err) util.handlerError(res, (err));
+        if (!err) {
+            res.json(data);
+        }
+    });
 };
 
