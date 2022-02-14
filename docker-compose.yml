@@ -11,8 +11,6 @@ services:
       - $MONGODB_LOCAL_PORT:$MONGODB_DOCKER_PORT
     volumes:
       - db:/data/db
-    networks:
-      - backend
   
   rpc-gateway-server:
     depends_on:
@@ -30,9 +28,6 @@ services:
       - DB_PORT=$MONGODB_DOCKER_PORT
       - RPC_SERVER_BASE_URL=$RPC_SERVER_BASE_URL
       - RPC_SERVER_BASE_PORT=$RPC_SERVER_BASE_PORT
-    networks:
-      - backend
-      - frontend
   rpc-server:
     depends_on:
       - rpc-gateway-server
@@ -45,11 +40,5 @@ services:
      - RPC_SERVER_BASE_URL=$RPC_SERVER_BASE_URL
      - RPC_SERVER_BASE_PORT=$RPC_SERVER_BASE_PORT
      - TOKEN_KEY=$TOKEN_KEY
-    networks:
-      - backend
-      - frontend
 volumes: 
   db:
-networks:
-  backend:
-  frontend:

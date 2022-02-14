@@ -11,8 +11,8 @@ var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 
 const DirectoryService = grpc.loadPackageDefinition(packageDefinition).DirectoryService;
 const UserService = grpc.loadPackageDefinition(packageDefinition).UserService;
-const rpcUrl = `${process.env.RPC_SERVER_BASE_URL}:${process.env.RPC_SERVER_BASE_URL}`;
-
+const rpcUrl = `${process.env.RPC_SERVER_BASE_URL}:${process.env.RPC_SERVER_BASE_PORT}`;
+console.log(rpcUrl)
 const directoryServiceClient = new DirectoryService(rpcUrl,
 	grpc.credentials.createInsecure()
 );

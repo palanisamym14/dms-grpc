@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+require('dotenv').config();
 const cors = require('cors')
 const multer = require('multer');
 const userController = require("./controller/user");
@@ -8,7 +9,7 @@ const verifyToken = require('./middleware/validatetoken');
 const upload = multer({dest:'public/files'});
 
 const app = express();
-require('dotenv').config();
+
 
 const corsOption = {
     credentials: true,

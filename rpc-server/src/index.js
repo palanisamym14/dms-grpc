@@ -1,11 +1,12 @@
 const PROTO_PATH = "./proto/filemanager.proto";
 const mongoose = require('mongoose');
 const grpc = require("grpc");
+require('dotenv').config()
+
 const protoLoader = require("@grpc/proto-loader");
 const usercontroller = require('./controller/user');
 const filemanagerService = require('./service/filemanager');
 const filemanagercontroller = require('./controller/filemanager');
-require('dotenv').config()
 const helper = require('./helper');
 const fs = require('fs');
 
