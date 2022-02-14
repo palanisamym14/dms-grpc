@@ -3,7 +3,7 @@ services:
   dms-server:
     container_name: 'dmsserver'
     build: ./dms-server
-    restart: unless-stopped
+    restart: always
     # env_file: ./.env
     ports:
       - $RPC_SERVER_BASE_PORT:$RPC_SERVER_BASE_PORT
@@ -18,7 +18,7 @@ services:
     depends_on:
       - dms-server
     build: ./gateway-server
-    restart: unless-stopped
+    restart: always
     # env_file: ./.env
     ports:
       - $NODE_LOCAL_PORT:$NODE_LOCAL_PORT
@@ -33,7 +33,7 @@ services:
     depends_on:
       - gateway-server
     build: ./dms-ui
-    restart: unless-stopped
+    restart: always
     # env_file: ./.env
     ports:
       - $REACT_PORT:$REACT_PORT
