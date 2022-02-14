@@ -20,7 +20,7 @@ exports.create = async (req, res) => {
 
 };
 
-exports.login = (req, res) => {
+exports.login = async (req, res) => {
     try {
         const input = await ValidateSchema(req.body, InputUserSchema)
         client.userServiceClient.get(input, (err, data) => {

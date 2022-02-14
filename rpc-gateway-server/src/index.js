@@ -32,7 +32,7 @@ app.post("/file/upload", upload.single('file'), verifyToken, fileManagerControll
 app.get("/file/download/:id", verifyToken, fileManagerController.downloadFile);
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.NODE_DOCKER_PORT || 8080;
 app.listen(PORT, () => {
     console.log("Server running at port %d", PORT);
 });

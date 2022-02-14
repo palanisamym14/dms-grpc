@@ -11,12 +11,12 @@ var packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 
 const DirectoryService = grpc.loadPackageDefinition(packageDefinition).DirectoryService;
 const UserService = grpc.loadPackageDefinition(packageDefinition).UserService;
-const directoryServiceClient = new DirectoryService(
-	"localhost:30043",
+const rpcUrl = `${process.env.RPC_SERVER_BASE_URL}:${process.env.RPC_SERVER_BASE_URL}`;
+
+const directoryServiceClient = new DirectoryService(rpcUrl,
 	grpc.credentials.createInsecure()
 );
-const userServiceClient = new UserService(
-	"localhost:30043",
+const userServiceClient = new UserService(rpcUrl,
 	grpc.credentials.createInsecure()
 );
 

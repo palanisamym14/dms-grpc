@@ -34,8 +34,9 @@ server.addService(proto.UserService.service, {
     get: usercontroller.get,
     insert: usercontroller.insert,
 });
+const rpcUrl = `${process.env.RPC_SERVER_BASE_URL}:${process.env.RPC_SERVER_BASE_PORT}`;
 
-server.bind("127.0.0.1:30043", grpc.ServerCredentials.createInsecure());
-console.log("Server running at http://127.0.0.1:30043");
+server.bind(rpcUrl, grpc.ServerCredentials.createInsecure());
+console.log("Server running at " + rpcUrl);
 (async () => await mongoose.connect(process.env.DB_CONNECTION_STRING))();
 server.start();
