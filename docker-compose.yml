@@ -28,6 +28,20 @@ services:
       - TOKEN_KEY=$TOKEN_KEY
     networks:
       - zitask
+  dms-ui:
+    container_name: 'dms-ui'
+    depends_on:
+      - gateway-server
+    build: ./dms-ui
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - $REACT_PORT:$REACT_PORT
+    environment:
+      - REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL
+      - REACT_APP_API_PORT=$NODE_LOCAL_PORT
+    networks:
+      - zitask
 networks:
   zitask:
     name: 'zitask'

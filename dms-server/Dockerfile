@@ -1,5 +1,5 @@
 FROM node:14
-WORKDIR /rpc-server
+WORKDIR /dms-server
 COPY package.json .
 RUN npm install
 COPY . .

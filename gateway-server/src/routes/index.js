@@ -5,7 +5,7 @@ const userController = require("../controller/user");
 const fileManagerController = require("../controller/filemanager");
 const verifyToken = require('../middleware/validatetoken');
 
-const upload = multer({ dest: '../public/files' });
+const upload = multer({ dest: '../temp/files' });
 
 // user api 
 router.post("/signup", userController.create);
