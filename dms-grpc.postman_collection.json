@@ -1,0 +1,301 @@
+{
+	"info": {
+		"_postman_id": "2599f667-bc7b-413e-b013-3953ac15e8b4",
+		"name": "dms-grpc",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "signup",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"palanisamy1121@gmail.com\",\n    \"password\": \"12345\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/signup",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login / getToken",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"palanisamy1121@gmail.com\",\n    \"password\": \"12345\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/login",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Dir",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"path\": \"Leve4\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/directory",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"directory"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "directory find all",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"description": "Jwt token",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/api/directory?id=6209d293cbf94f4c5f030ba7",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"directory"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "6209d293cbf94f4c5f030ba7"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "directory/file find one",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"description": "Jwt token",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/api/directory/:id",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"directory",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "6209cab947372a84bef83cf1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "rename file/folder",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":\"6209d1cd6c2404cb40ed4dde\",\n    \"newName\": \"Level4\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/directory/rename",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"directory",
+						"rename"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete file/folder",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"description": "Jwt token",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/api/directory/:id",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"directory",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "6209cab947372a84bef83cf1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upload file",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "parent",
+							"value": "6209cab947372a84bef83cf1",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/palanisamym/Desktop/Invoice.pdf"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/api/file/upload",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api",
+						"file",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download file",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"description": "Jwt token",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/file/api/download/:id",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"file",
+						"api",
+						"download",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "620a2a688f04a47cddf75655"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
