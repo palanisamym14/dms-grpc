@@ -1,7 +1,6 @@
 # Docker Compose MERN Stack with Nginx example
 
-Dockerize fullstack: React, Nodejs Express and MongoDB (MERN stack application) example using Docker Compose with Nginx.
-
+Dockerize fullstack: React, Nodejs Express 
 ## ENV
 ```bash
 TOKEN_KEY=secret
@@ -13,16 +12,12 @@ RPC_SERVER_BASE_PORT=30034
 
 NODE_LOCAL_PORT=8080
 
-REACT_PORT=5000
-
-TOKEN_KEY=secret
+REACT_PORT=3000
+REACT_APP_API_BASE_URL=http://127.0.0.1
+REACT_APP_API_PORT=8080
 
 ```
 
-##swagger doc
-```bash
-http://host:port/api-docs
-```
 ## Run the System
 We can easily run the whole with only a single command:
 ```bash
@@ -46,3 +41,17 @@ If you need to stop and remove all containers, networks, and all images used by 
 ```bash
 docker-compose down --rmi all
 ```
+
+### API DOC
+Api swagger document avaliable in below link
+
+```bash
+http://localhost:8080/api/api-doc
+```
+
+### healthcheck 
+```bash
+http://localhost:8080/api/health
+```
+
+#### Note: UI currently running on development mode, it will take a few seconds/minutes to start the application

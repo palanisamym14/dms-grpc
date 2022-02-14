@@ -22,12 +22,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // health check
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
     res.status(200).send('Ok');
 });
 
-// swagget api docs
-app.use('/api-docs', function (req, res, next) {
+// swagger api docs
+app.use('/api/api-docs', function (req, res, next) {
     swaggerDocument.host = req.get('host');
     req.swaggerDoc = swaggerDocument;
     next();
