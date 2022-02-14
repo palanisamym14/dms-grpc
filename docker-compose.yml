@@ -12,10 +12,10 @@ services:
     volumes:
       - db:/data/db
   
-  rpc-gateway-server:
+  rpc-server:
     depends_on:
       - mongodb
-    build: ./rpc-gateway-server
+    build: ./rpc-server
     restart: unless-stopped
     env_file: ./.env
     ports:
@@ -28,9 +28,9 @@ services:
       - DB_PORT=$MONGODB_DOCKER_PORT
       - RPC_SERVER_BASE_URL=$RPC_SERVER_BASE_URL
       - RPC_SERVER_BASE_PORT=$RPC_SERVER_BASE_PORT
-  rpc-server:
+  rpc-gateway-server:
     depends_on:
-      - rpc-gateway-server
+      - rpc-server
     build: ./rpc-server
     restart: unless-stopped
     env_file: ./.env
