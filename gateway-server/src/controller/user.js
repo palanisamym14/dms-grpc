@@ -1,10 +1,10 @@
-const client = require("./../rpc-client");
-const ValidateSchema = require("./../schema/validator");
-const InputUserSchema = require("./../schema/user.schema");
-const getAuthToken = require('./../middleware/generatetoken');
-const util = require('./../helper/util');
+const client = require("../rpc-client");
+const ValidateSchema = require("../schema/validator");
+const InputUserSchema = require("../schema/user.schema");
+const getAuthToken = require('../middleware/generatetoken');
+const util = require('../helper/util');
 
-// Create and Save a new User
+// Create and Save a new User if user already exists return error
 exports.create = async (req, res) => {
     try {
         const input = await ValidateSchema(req.body, InputUserSchema)
@@ -20,6 +20,7 @@ exports.create = async (req, res) => {
 
 };
 
+// Validate the use info and return the authtoken
 exports.login = async (req, res) => {
     try {
         const input = await ValidateSchema(req.body, InputUserSchema)

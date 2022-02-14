@@ -5,10 +5,7 @@ require('dotenv').config()
 
 const protoLoader = require("@grpc/proto-loader");
 const usercontroller = require('./controller/user');
-const filemanagerService = require('./service/filemanager');
 const filemanagercontroller = require('./controller/filemanager');
-const helper = require('./helper');
-const fs = require('fs');
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
     keepCase: true,
@@ -39,5 +36,6 @@ const rpcUrl = `${process.env.RPC_SERVER_BASE_URL}:${process.env.RPC_SERVER_BASE
 
 server.bind(rpcUrl, grpc.ServerCredentials.createInsecure());
 console.log("Server running at " + rpcUrl);
+
 (async () => await mongoose.connect(process.env.DB_CONNECTION_STRING))();
 server.start();

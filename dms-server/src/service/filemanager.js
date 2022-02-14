@@ -1,21 +1,24 @@
 const mongoose = require('mongoose');
-const fileProcessor = require('./managefile');
+const fileProcessor = require('../helper/managefile');
 const FilemanagerModel = require('../models/filemanager');
-const helper = require('./../helper')
+const helper = require('../helper')
 const path = require('path');
 const mime = require('mime');
 const fs = require('fs');
 
+// create dir 
 exports.create = async (body) => {
     try {
-        const user = new FilemanagerModel(body);
-        const res = await user.save()
+        const dir = new FilemanagerModel(body);
+        const res = await dir.save()
         return {...body, _id: res._id};
     } catch (error) {
         throw error;
     }
 };
 
+// Upload file method validate the user input data, verify the parent folder, 
+// file  exist if not upload the file to disk otherwise reject
 exports.uploadFile = async (body) => {
     try {
 
@@ -35,6 +38,7 @@ exports.uploadFile = async (body) => {
     }
 };
 
+// mongodb aggreation for fetching the directory nth level
 const customAggregation = (body) => {
     const aggregate = FilemanagerModel.aggregate();
     aggregate.match({ ...body });
@@ -85,6 +89,7 @@ exports.findAll = async (body) => {
     }
 };
 
+// find specfic folder / directory 
 exports.findOne = async (body) => {
     try {
         if (!helper.isValidId(body.id)) {
@@ -103,7 +108,7 @@ exports.findOne = async (body) => {
     }
 };
 
-
+// rename the file/folder
 exports.renameDirFile = async (body) => {
     let session;
     try {
@@ -129,6 +134,7 @@ exports.renameDirFile = async (body) => {
     }
 };
 
+// method returns the file path of given id, if not exists in storage return error
 exports.downloadFile = async (body) => {
     try {
         const data = await this.findOne(body);
@@ -150,7 +156,7 @@ exports.downloadFile = async (body) => {
     }
 };
 
-
+// delete the file / folder for given id, folder contain child items it return error
 exports.delete = async (body) => {
     try {
         const dir = await this.findOne(body);

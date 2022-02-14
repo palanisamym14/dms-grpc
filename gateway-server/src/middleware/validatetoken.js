@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const config = process.env;
-
+// validate the jwt token. user can send the token header, also can send in query param
 const verifyToken = (req, res, next) => {
     const token = req.headers["authorization"] || req.query["authorization"];
 

@@ -1,5 +1,6 @@
 const Joi = require('joi');
 
+// user input schema
 exports.CreateFileDirSchema = Joi.object({
     type: Joi.string().valid('DIR').default('DIR'),
     path: Joi.string().required(),

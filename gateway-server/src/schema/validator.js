@@ -1,3 +1,4 @@
+// method helps to validate the schema and user input data, if statisfied, return true, otherwise 404 error
 validateSchema = async (values, schema) => {
     try {
         const { value, error } = await schema.validate(values);

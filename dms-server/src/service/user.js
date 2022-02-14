@@ -1,5 +1,5 @@
-const UserModal = require('./../models/user');
-const { isValidId } = require('./../helper');
+const UserModal = require('../models/user');
+const { isValidId } = require('../helper');
 const bcrypt = require("bcrypt");
 var grpc = require('grpc');
 
@@ -10,7 +10,7 @@ exports.getUser = async (id) => {
     return user;
 }
 
-// signup 
+// signup  
 exports.signup = async (body) => {
     try {
         const user = new UserModal(body);

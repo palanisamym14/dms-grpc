@@ -1,16 +1,20 @@
-const client = require("./../rpc-client");
-const ValidateSchema = require("./../schema/validator");
-const fileManagerSchema = require("./../schema/filemanager");
+const client = require("../rpc-client");
+const ValidateSchema = require("../schema/validator");
+const fileManagerSchema = require("../schema/filemanager");
 const fs = require('fs')
-const util = require('./../helper/util');
+const util = require('../helper/util');
 const { Readable } = require('stream');
 
+// // this method handle request of creat the directory
 exports.create = async (req, res) => {
     try {
+
+        // ValidateSchema helps to validate the input value and restrict the input items
         const input = await ValidateSchema(req.body, fileManagerSchema.CreateFileDirSchema);
+        // userId decoded from the jwt token
         input.owner = req.user.id;
+
         client.directoryServiceClient.insert({ ...input }, (err, data) => {
-            console.log(err)
             if (err) util.handlerError(res, (err));
             if (!err) {
                 res.json(data);
@@ -22,7 +26,7 @@ exports.create = async (req, res) => {
     }
 };
 
-
+// upload file to rpc server
 exports.uploadFile = async (req, res) => {
     try {
         const input = await ValidateSchema(req.body, fileManagerSchema.FileUploadSchema);
@@ -37,7 +41,6 @@ exports.uploadFile = async (req, res) => {
         input.owner = req.user.id;
 
         client.directoryServiceClient.uploadFile({ ...input }, (err, data) => {
-            console.log(err)
             if (err) util.handlerError(res, (err));
             if (!err) {
                 res.json(data);
@@ -49,13 +52,13 @@ exports.uploadFile = async (req, res) => {
     }
 };
 
+// download file takes an input of file id and return back file as a stream
 exports.downloadFile = async (req, res) => {
     try {
         const input = {
             owner: req.user.id,
             id: req.params.id
         }
-        console.log(input);
         let call = client.directoryServiceClient.downloadFile({ ...input });
         let inStream = new Readable({
             read() { }
@@ -72,14 +75,12 @@ exports.downloadFile = async (req, res) => {
                 inStream.push(response.message);
             }
             if (response.error) {
-                console.log(response.error);
                 inStream = null;
                 util.handlerError(res,{ details:response.error});
             }
         });
 
         call.on('end', function (message) {
-            console.log(message);
             if (inStream) {
                 inStream.push(null)
                 inStream.pipe(res);
@@ -91,6 +92,7 @@ exports.downloadFile = async (req, res) => {
     }
 };
 
+// get the selected directory/ file using given id 
 exports.findOne = async (req, res) => {
     const input = await ValidateSchema(req.params, fileManagerSchema.FindFileDirSchema);
     input.owner = req.user.id;
@@ -102,12 +104,12 @@ exports.findOne = async (req, res) => {
     });
 };
 
+// Fetch all dir/file from rootlevel. if we passed any parent id, it will return specific inputs child items
 exports.findAll = async (req, res) => {
     try {
         const input = await ValidateSchema(req.query, fileManagerSchema.FindFileDirSchema);
         input.owner = req.user.id;
         client.directoryServiceClient.getAll({ ...input }, (err, data) => {
-            console.log(err)
             if (err) util.handlerError(res, (err));
             if (!err) {
                 res.json(data?.directories || []);
@@ -118,12 +120,12 @@ exports.findAll = async (req, res) => {
     }
 };
 
+// rename the file or folder for given input
 exports.rename = async (req, res) => {
     try {
         const input = await ValidateSchema(req.body, fileManagerSchema.RenameFileDirSchema);
         input.owner = req.user.id;
         client.directoryServiceClient.renameDirFile({ ...input }, (err, data) => {
-            console.log(err)
             if (err) util.handlerError(res, (err));
             if (!err) {
                 res.json(data);
@@ -134,6 +136,7 @@ exports.rename = async (req, res) => {
     }
 };
 
+// Delete the file or folder for given input, if dir contain child items it will return error
 exports.delete = async (req, res) => {
     const input = await ValidateSchema(req.params, fileManagerSchema.FindFileDirSchema);
     input.owner = req.user.id;
