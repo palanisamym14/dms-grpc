@@ -47,7 +47,8 @@ export default function CustomPopover({ data, refetch }) {
     }
 
     const downloadFile = () => {
-        window.open(`http://localhost:3000/file/download/${data._id}?authorization=${localStorage.getItem('token')}`);
+        const BASE_URL = `${process.env.REACT_APP_API_BASE_URL}:${process.env.REACT_APP_API_PORT}/api`;
+        window.open(`${BASE_URL}/file/download/${data._id}?authorization=${localStorage.getItem('token')}`);
     }
 
     return (
