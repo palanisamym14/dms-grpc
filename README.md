@@ -53,5 +53,9 @@ http://localhost:8080/api/api-doc
 ```bash
 http://localhost:8080/api/health
 ```
+### architecture_diagram .png
+![Alt text](architecture_diagram%20.png?raw=true "Title")
+### ER DIgram
+![Alt text](er_digram.png?raw=true "Title")
 
 #### Note: UI currently running on development mode, it will take a few seconds/minutes to start the application
