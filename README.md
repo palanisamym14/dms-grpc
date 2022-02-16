@@ -1,6 +1,6 @@
-# Docker Compose MERN Stack with Nginx example
+# Document managemant system with gRPC
 
-Dockerize fullstack: React, Nodejs Express 
+
 ## ENV
 ```bash
 TOKEN_KEY=secret
@@ -12,7 +12,6 @@ RPC_SERVER_BASE_PORT=30034
 
 NODE_LOCAL_PORT=8080
 
-REACT_PORT=3000
 REACT_APP_API_BASE_URL=http://127.0.0.1
 REACT_APP_API_PORT=8080
 
@@ -49,13 +48,17 @@ Api swagger document avaliable in below link
 http://localhost:8080/api/api-doc
 ```
 
-### healthcheck 
+### Healthcheck 
 ```bash
 http://localhost:8080/api/health
 ```
-### architecture_diagram .png
+
+### UI 
+```bash
+http://localhost
+```
+### Architecture Diagram
 ![Alt text](architecture_diagram%20.png?raw=true "Title")
-### ER DIgram
+### ER Diagram
 ![Alt text](er_digram.png?raw=true "Title")
 
-#### Note: UI currently running on development mode, it will take a few seconds/minutes to start the application
