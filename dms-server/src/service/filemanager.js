@@ -23,7 +23,7 @@ exports.uploadFile = async (body) => {
     try {
 
         if (body.parent) {
-            const dir = await FilemanagerModel.findOne({ _id: body.parent, type: 'FILE' });
+            const dir = await FilemanagerModel.findOne({ parent: body.parent, type: 'FILE' });
             if (dir) {
                 throw "only one file allowed in subfolders";
             }
